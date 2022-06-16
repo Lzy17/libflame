@@ -25,11 +25,11 @@ FLA_Error FLA_Copy_external_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, 
   if ( FLA_Obj_has_zero_dim( A ) ) return FLA_SUCCESS;
 
   const dim_t elem_size = FLA_Obj_elem_size( B );
-  const dim_t ldim_A    = FLA_Obj_length( A );
+  const dim_t ldim_A    = FLA_Obj_col_stride( A );
 
   const dim_t m_B       = FLA_Obj_length( B );
   const dim_t n_B       = FLA_Obj_width( B );
-  const dim_t ldim_B    = FLA_Obj_length( B );
+  const dim_t ldim_B    = FLA_Obj_col_stride( B );
 
   const size_t dpitch   = elem_size * ldim_B;
   const size_t spitch   = elem_size * ldim_A;
@@ -48,7 +48,8 @@ FLA_Error FLA_Copy_external_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, 
                                            hipMemcpyDeviceToDevice,
                                            stream );
 
-  if ( err != hipSuccess ) {
+  if ( err != hipSuccess )
+  {
     fprintf( stderr, "Failure to memcpy D2D in HIP: %d\n", err);
     return FLA_FAILURE;
   }
