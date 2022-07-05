@@ -334,7 +334,7 @@ void FLASH_Queue_exec_task_hip( FLASH_Task* t,
    // LAPACK
    typedef FLA_Error(*flash_chol_hip_p)(rocblas_handle handle, FLA_Uplo uplo, FLA_Obj A, void* A_hip );
    typedef FLA_Error(*flash_trinv_hip_p)(rocblas_handle handle, FLA_Uplo uplo, FLA_Diag diag, FLA_Obj A, void* A_hip );
-   typedef FLA_Error(*flash_eig_gest_hip_p)(rocblas_handle handle, FLA_Inv inv, FLA_Uplo uplo, FLA_Obj A, void* A_hip, FLA_Obj Y, void* Y_hip, FLA_Obj B, void* B_hip );
+   typedef FLA_Error(*flash_eig_gest_hip_p)(rocblas_handle handle, FLA_Inv inv, FLA_Uplo uplo, FLA_Obj A, FLA_Obj B, void* A_hip, void* B_hip );
    typedef FLA_Error(*flash_lu_piv_hip_p)(rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj p );
    typedef FLA_Error(*flash_lu_piv_copy_hip_p)(rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj p, FLA_Obj U, void* U_hip );
 
@@ -400,11 +400,10 @@ void FLASH_Queue_exec_task_hip( FLASH_Task* t,
             ( FLA_Inv         ) t->int_arg[0],
             ( FLA_Uplo        ) t->int_arg[1],
                                 t->output_arg[1],
-                                output_arg[1],
                                 t->output_arg[0],
-                                output_arg[0],
-                                t->input_arg[0],
-                                input_arg[0] );
+				output_arg[1],
+                                output_arg[0]
+                                );
    }
    // FLA_LU_piv
    else if ( t->func == (void *) FLA_LU_piv_task )
