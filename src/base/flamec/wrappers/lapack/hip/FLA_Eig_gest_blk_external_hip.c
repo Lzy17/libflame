@@ -1,7 +1,8 @@
 /*
 
     Copyright (C) 2014, The University of Texas at Austin
-
+    Copyright (C) 2022, Advanced Micro Devices, Inc.
+    
     This file is part of libflame and is available under the 3-Clause
     BSD license, which can be found in the LICENSE file at the top-level
     directory, or at http://opensource.org/licenses/BSD-3-Clause
@@ -9,7 +10,7 @@
 */
 
 #include "FLAME.h"
-#ifdef FLA_ENABLE_EXTERNAL_LAPACK_INTERFACES
+#ifdef FLA_ENABLE_HIP
 #include "hip/hip_runtime_api.h"
 #include "rocblas.h"
 #include "rocsolver.h"
@@ -18,24 +19,24 @@
 
 
 
-FLA_Error FLA_Eig_gest_il_blk_ext_hip( rocblas_handle handle, FLA_Obj A, FLA_Obj B, void* A_hip, void* B_hip )
+FLA_Error FLA_Eig_gest_il_blk_ext_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip )
 {
-  return FLA_Eig_gest_blk_external_hip( handle, FLA_INVERSE, FLA_LOWER_TRIANGULAR, A, B, A_hip, B_hip );
+  return FLA_Eig_gest_blk_external_hip( handle, FLA_INVERSE, FLA_LOWER_TRIANGULAR, A, A_hip, B, B_hip );
 }
 
-FLA_Error FLA_Eig_gest_iu_blk_ext_hip( rocblas_handle handle, FLA_Obj A, FLA_Obj B, void* A_hip, void* B_hip )=
+FLA_Error FLA_Eig_gest_iu_blk_ext_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip )
 {
-  return FLA_Eig_gest_blk_external_hip( handle, FLA_INVERSE, FLA_UPPER_TRIANGULAR, A, B, A_hip, B_hip );
+  return FLA_Eig_gest_blk_external_hip( handle, FLA_INVERSE, FLA_UPPER_TRIANGULAR, A, A_hip, B, B_hip );
 }
 
-FLA_Error FLA_Eig_gest_nl_blk_ext_hip( rocblas_handle handle, FLA_Obj A, FLA_Obj B, void* A_hip, void* B_hip )
+FLA_Error FLA_Eig_gest_nl_blk_ext_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip )
 {
-  return FLA_Eig_gest_blk_external_hip( handle, FLA_NO_INVERSE, FLA_LOWER_TRIANGULAR, A, B, A_hip, B_hip );
+  return FLA_Eig_gest_blk_external_hip( handle, FLA_NO_INVERSE, FLA_LOWER_TRIANGULAR, A, A_hip, B, B_hip );
 }
 
-FLA_Error FLA_Eig_gest_nu_blk_ext_hip( rocblas_handle handle, FLA_Obj A, FLA_Obj B, void* A_hip, void* B_hip )
+FLA_Error FLA_Eig_gest_nu_blk_ext_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip )
 {
-  return FLA_Eig_gest_blk_external_hip( handle, FLA_NO_INVERSE, FLA_UPPER_TRIANGULAR, A, B, A_hip, B_hip );
+  return FLA_Eig_gest_blk_external_hip( handle, FLA_NO_INVERSE, FLA_UPPER_TRIANGULAR, A, A_hip, B, B_hip );
 }
 
 
@@ -44,7 +45,7 @@ FLA_Error FLA_Eig_gest_nu_blk_ext_hip( rocblas_handle handle, FLA_Obj A, FLA_Obj
 
 
 
-FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA_Uplo uplo, FLA_Obj A, FLA_Obj B, void* A_hip, void* B_hip )
+FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA_Uplo uplo, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip )
 {
   //FLA_Error    r_val = FLA_SUCCESS;
   rocblas_eform  itype;
@@ -70,8 +71,7 @@ FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
   ld_B     = FLA_Obj_length( B );
 
   rocblas_fill blas_uplo = FLA_Param_map_flame_to_rocblas_uplo( uplo );
-  rocblas_int* info;
-  hipMalloc( (void**) &info, sizeof( rocblas_int) );
+  //hipMalloc( (void**) &info, sizeof( rocblas_int) );
 
 
   switch( datatype ){
@@ -79,12 +79,11 @@ FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
   case FLA_FLOAT:
   {
 
-    rocsolver__ssygst( handle, itype,
+    rocsolver_ssygst( handle, itype,
                 blas_uplo,
                 n_A,
                 ( float * ) A_hip, ld_A,
-                ( float * ) B_hip, ld_B,
-                info );
+                ( float * ) B_hip, ld_B);
 
     break;
   }
@@ -96,8 +95,7 @@ FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
                 blas_uplo,
                 n_A,
                 ( double * ) A_hip, ld_A,
-                ( double * ) B_hip, ld_B,
-                info );
+                ( double * ) B_hip, ld_B);
 
     break;
   } 
@@ -108,9 +106,8 @@ FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
     rocsolver_chegst( handle, itype,
                 blas_uplo,
                 n_A,
-                ( rocblas_float_complex * ) buff_A, ;d_A,
-                ( rocblas_float_complex *) buff_B, ld_B,
-                info );
+                ( rocblas_float_complex * ) A_hip, ld_A,
+                ( rocblas_float_complex * ) B_hip, ld_B);
 
     break;
   } 
@@ -122,14 +119,13 @@ FLA_Error FLA_Eig_gest_blk_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
                 blas_uplo,
                 n_A,
                 ( rocblas_double_complex * ) A_hip, ld_A,
-                ( rocblas_double_complex * ) B_hip, ld_B,
-                info );
+                ( rocblas_double_complex * ) B_hip, ld_B);
 
     break;
   } 
 
   }
-  hipFree( info );
+  //hipFree( info );
   return FLA_SUCCESS;
 }
 
