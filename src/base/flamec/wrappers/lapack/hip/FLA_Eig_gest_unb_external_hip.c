@@ -44,6 +44,8 @@ FLA_Error FLA_Eig_gest_nu_unb_ext_hip( rocblas_handle handle, FLA_Obj A, void* A
 
 FLA_Error FLA_Eig_gest_unb_external_hip( rocblas_handle handle, FLA_Inv inv, FLA_Uplo uplo, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip )
 {
+  //DEBUG
+  //printf("enter hip version \n");
   //FLA_Error    r_val = FLA_SUCCESS;
   rocblas_eform  itype;
   //int          info;
@@ -64,13 +66,28 @@ FLA_Error FLA_Eig_gest_unb_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
   datatype = FLA_Obj_datatype( A );
 
   n_A      = FLA_Obj_width( A );
-  ld_A     = FLA_Obj_length( A );
-  ld_B     = FLA_Obj_length( B );
+  ld_A     = FLA_Obj_col_stride( A );
+  ld_B     = FLA_Obj_col_stride( B );
 
   rocblas_fill blas_uplo = FLA_Param_map_flame_to_rocblas_uplo( uplo );
   //rocblas_int* info;
   //hipMalloc( (void**) &info, sizeof( rocblas_int) );
 
+
+  void* A_buff = NULL;
+  void* B_buff = NULL;
+  if ( FLASH_Queue_get_malloc_managed_enabled_hip( ) )
+  {
+    //DEBUG
+    //printf("use managed memory");
+    A_buff = FLA_Obj_buffer_at_view( A );
+    B_buff = FLA_Obj_buffer_at_view( B );
+  }
+  else
+  {
+    A_buff = A_hip;
+    B_buff = B_hip;
+  }
 
 
   switch( datatype ){
@@ -81,8 +98,8 @@ FLA_Error FLA_Eig_gest_unb_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
     rocsolver_ssygs2( handle, itype,
                 blas_uplo,
                 n_A,
-                ( float * ) A_hip, ld_A,
-                ( float * ) B_hip, ld_B);
+                ( float * ) A_buff, ld_A,
+                ( float * ) B_buff, ld_B);
 
     break;
   }
@@ -93,8 +110,8 @@ FLA_Error FLA_Eig_gest_unb_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
     rocsolver_dsygs2( handle, itype,
                 blas_uplo,
                 n_A,
-                ( double * ) A_hip, ld_A,
-                ( double * ) B_hip, ld_B);
+                ( double * ) A_buff, ld_A,
+                ( double * ) B_buff, ld_B);
 
     break;
   }
@@ -105,8 +122,8 @@ FLA_Error FLA_Eig_gest_unb_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
     rocsolver_chegs2( handle, itype,
                 blas_uplo,
                 n_A,
-                ( rocblas_float_complex * ) A_hip, ld_A,
-                ( rocblas_float_complex * ) B_hip, ld_B);
+                ( rocblas_float_complex * ) A_buff, ld_A,
+                ( rocblas_float_complex * ) B_buff, ld_B);
 
     break;
   }
@@ -117,8 +134,8 @@ FLA_Error FLA_Eig_gest_unb_external_hip( rocblas_handle handle, FLA_Inv inv, FLA
     rocsolver_zhegs2( handle, itype,
                 blas_uplo,
                 n_A,
-                ( rocblas_double_complex * ) A_hip, ld_A,
-                ( rocblas_double_complex * ) B_hip, ld_B);
+                ( rocblas_double_complex * ) A_buff, ld_A,
+                ( rocblas_double_complex * ) B_buff, ld_B);
 
     break;
   }
