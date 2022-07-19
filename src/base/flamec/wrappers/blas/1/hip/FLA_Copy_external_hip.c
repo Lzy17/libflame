@@ -49,8 +49,10 @@ FLA_Error FLA_Copy_external_hip( rocblas_handle handle, FLA_Obj A, void* A_hip, 
     B_mat = B_hip;
   }
 
-  hipStream_t stream;
-  rocblas_get_stream( handle, &stream );
+  //hipStream_t stream;
+  //rocblas_get_stream( handle, &stream );
+  hipStream_t stream = (hipStream_t) 0;
+  // rocblas_get_stream( handle, &stream );
   // hipMemcpy2D assumes row-major layout
   hipError_t err = hipMemcpy2DAsync( B_mat,
                                      dpitch,
