@@ -55,9 +55,36 @@ void FLASH_Queue_init_hip( void )
    {
       // initialize a rocBLAS handle
       hipSetDevice( i );
+      hipStream_t stream;
+      err = hipStreamCreate(& stream);
+      if ( err != hipSuccess )
+      {
+         fprintf( stderr, "Failure create stream: %d\n", err);
+         return;
+      }
       rocblas_create_handle( &(handles[i]) );
+      err = rocblas_set_stream( handles[i], stream );
+      if ( err != hipSuccess )
+      {
+         fprintf( stderr, "Failure set stream: %d\n", err);
+         return;
+      }
+
       //hipSetDevice( i );
    }
+   //FOR DEBUG
+   
+
+   /*for ( int i  = 0; i < device_count; i++ )
+   {
+      // initialize a rocBLAS handle
+      hipSetDevice( i );
+      hipStream_t temp;
+      rocblas_get_stream(handles[i], &temp);
+      fprintf(stdout, "enter debug\n");
+      //hipSetDevice( i );
+   }*/
+
 
    return;
 }
