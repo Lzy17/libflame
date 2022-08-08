@@ -7,7 +7,7 @@
     directory, or at http://opensource.org/licenses/BSD-3-Clause
 
 */
-
+#include <time.h>
 #include "FLAME.h"
 
 #define N_PARAM_COMBOS    2
@@ -102,14 +102,24 @@ int main(int argc, char *argv[])
   //datatype = FLA_COMPLEX;
   //datatype = FLA_DOUBLE_COMPLEX;
 
+  clock_t snt_begin = clock();
   FLASH_Queue_set_num_threads( n_threads );
+  clock_t snt_end = clock();
+  double snt_spent = 0.0;
+  snt_spent += (double)(snt_end - snt_begin) / CLOCKS_PER_SEC;
+  //printf("The set num thread time span is %f seconds \n", snt_spent);
 
+
+
+
+
+  clock_t begin = clock();
   for ( p = p_first, i = 1; p <= p_last; p += p_inc, i += 1 )
   {
     m = m_input;
 
     if( m < 0 ) m = p / f2c_abs(m_input);
-
+    printf("m is %d", m);
     for ( param_combo = 0; param_combo < n_param_combos; param_combo++ ){
 
       FLASH_Obj_create( datatype, m, m, 1, &nb_alg, &A );
@@ -126,28 +136,37 @@ int main(int argc, char *argv[])
       fflush( stdout );
 
 
-      time_Chol( param_combo, FLA_ALG_REFERENCE, n_repeats, m,
-                 A, A_ref, &dtime, &diff, &gflops );
-
-      fprintf( stdout, "%6.3lf %6.2le ", gflops, diff );
-      fflush( stdout );
+      clock_t chol_begin = clock();
 
       time_Chol( param_combo, FLA_ALG_FRONT, n_repeats, m,
                  A, A_ref, &dtime, &diff, &gflops );
 
-      fprintf( stdout, "%6.3lf %6.2le %ld", gflops, diff, m );
+      clock_t chol_end = clock();
+      double chol_spent = 0.0;
+      chol_spent += (double)(chol_end - chol_begin) / CLOCKS_PER_SEC;
+      printf("The chol time span is %f seconds \n", chol_spent);
+
+      fprintf( stdout, "%6.3lf ", gflops);
       fflush( stdout );
 
 
       fprintf( stdout, " ]; \n" );
       fflush( stdout );
 
+
+
+
       FLASH_Obj_free( &A );
       FLASH_Obj_free( &A_ref );
+
     }
 
     fprintf( stdout, "\n" );
   }
+  clock_t end = clock();
+  double time_spent = 0.0;
+  time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("The computational time is %f seconds \n", time_spent);
 
 
   fprintf( stdout, "figure;\n" );

@@ -7,7 +7,7 @@ FNAME        := Chol
 SRC_PATH     := ../..
 OBJ_PATH     := .
 
-INST_PATH    := ~/Desktop/libflame-dev
+INST_PATH    := ~/Desktop/libflame
 LIB_PATH     := $(INST_PATH)/lib/x86_64-unknown-linux-gnu
 INC_PATH     := $(INST_PATH)/include/x86_64-unknown-linux-gnu
 FLAME_LIB    := $(LIB_PATH)/libflame.so
@@ -33,13 +33,28 @@ TEST_OBJS    += test_$(FNAME).o \
                 REF_$(FNAME).o
 TEST_BIN     := test_$(FNAME).x
 
+
+PERF_OBJS    := $(patsubst $(SRC_PATH)/%.c, $(OBJ_PATH)/%.o, $(wildcard $(SRC_PATH)/*.c))
+PERF_OBJS    += perf_$(FNAME).o \
+                time_$(FNAME).o \
+                REF_$(FNAME).o
+PERF_BIN     := perf_$(FNAME).x
+
+
+
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+perf_$(FNAME): $(PERF_OBJS)
+	$(LINKER) $(PERF_OBJS) $(LDFLAGS) $(FLAME_LIB) $(LAPACK_LIB) $(BLAS_LIB) -o $(PERF_BIN)
+
+
 test_$(FNAME): $(TEST_OBJS)
 	$(LINKER) $(TEST_OBJS) $(LDFLAGS) $(FLAME_LIB) $(LAPACK_LIB) $(BLAS_LIB) -o $(TEST_BIN)
+
+
 
 clean:
 	rm -f *.o $(OBJ_PATH)/*.o *~ core *.x

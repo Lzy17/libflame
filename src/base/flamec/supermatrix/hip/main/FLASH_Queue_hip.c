@@ -280,20 +280,21 @@ FLA_Error FLASH_Queue_free_hip( void* buffer_hip )
 }
 
 
-FLA_Error FLASH_Queue_write_hip( FLA_Obj obj, void* buffer_hip )
+FLA_Error FLASH_Queue_write_hip( int thread, FLA_Obj obj, void* buffer_hip )
 /*----------------------------------------------------------------------------
 
    FLASH_Queue_write_hip
 
 ----------------------------------------------------------------------------*/
 {
+   hipSetDevice( thread );
    if ( flash_malloc_managed_hip )
    {
      return FLA_SUCCESS; // HMM will take care of getting the memory over
    }
    // Write the contents of a block in main memory to HIP.
-   //hipStream_t stream;
-   //rocblas_get_stream( handle, &stream );
+   hipStream_t stream;
+   rocblas_get_stream( handles[thread], &stream );
    const size_t count = FLA_Obj_elem_size( obj )
                           * FLA_Obj_col_stride( obj )
                           * FLA_Obj_width( obj );
@@ -301,8 +302,8 @@ FLA_Error FLASH_Queue_write_hip( FLA_Obj obj, void* buffer_hip )
                                           FLA_Obj_buffer_at_view( obj ),
                                           count,
                                           hipMemcpyHostToDevice,
-                                          //stream );
-					  (hipStream_t) 0 );
+                                          stream );
+					  //(hipStream_t) 0 );
 
    if ( err != hipSuccess )
    {
@@ -328,10 +329,10 @@ FLA_Error FLASH_Queue_read_hip( int thread, FLA_Obj obj, void* buffer_hip )
    if ( flash_malloc_managed_hip )
    {
      // inject a stream sync on the rocBLAS stream to ensure completion
-     //hipStream_t stream;
-     //rocblas_get_stream( handle, &stream );
-     //hipError_t err = hipStreamSynchronize( stream );
-     hipError_t err = hipStreamSynchronize( (hipStream_t) 0 );
+     hipStream_t stream;
+     rocblas_get_stream( handles[thread], &stream );
+     hipError_t err = hipStreamSynchronize( stream );
+     //hipError_t err = hipStreamSynchronize( (hipStream_t) 0 );
      if ( err != hipSuccess )
      {
        fprintf( stderr,
