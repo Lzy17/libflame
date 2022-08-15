@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     sprintf( m_dim_tag,  "m%dp", 1 );
   }
 
-
+  //datatype = FLA_INT;
   //datatype = FLA_FLOAT;
   datatype = FLA_DOUBLE;
   //datatype = FLA_COMPLEX;

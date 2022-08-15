@@ -429,6 +429,7 @@ void FLASH_Queue_exec_task_hip( FLASH_Task* t,
    typedef FLA_Error(*flash_copy_hip_p)(rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip);
    typedef FLA_Error(*flash_scal_hip_p)(rocblas_handle handle, FLA_Obj alpha, FLA_Obj A, void* A_hip);
    typedef FLA_Error(*flash_scalr_hip_p)(rocblas_handle handle, FLA_Uplo uplo, FLA_Obj alpha, FLA_Obj A, void* A_hip);
+   typedef FLA_Error(*flash_copyt_hip_p)(rocblas_handle handle, FLA_Obj A, void* A_hip, FLA_Obj B, void* B_hip);
 
    // Only execute task if it is not NULL.
    if ( t == NULL )
@@ -714,6 +715,23 @@ void FLASH_Queue_exec_task_hip( FLASH_Task* t,
                             t->output_arg[0],
                             output_arg[0] );
    }
+
+   // FLA_Copyt
+   else if ( t->func == (void *) FLA_Copyt_task )
+   {
+      flash_copyt_hip_p func;
+      func = (flash_copyt_hip_p) FLA_Copyt_external_hip;
+
+      func(                 handle,
+                            t->input_arg[0],
+                            input_arg[0],
+                            t->output_arg[0],
+                            output_arg[0] );
+   }
+
+
+
+
    // FLA_Scal
    else if ( t->func == (void *) FLA_Scal_task )
    {

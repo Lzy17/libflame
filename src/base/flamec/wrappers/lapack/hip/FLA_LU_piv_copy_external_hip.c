@@ -26,8 +26,15 @@ FLA_Error FLA_LU_piv_copy_external_hip( rocblas_handle handle, FLA_Obj A, void* 
   {
     return r_val;
   }
-
+  // DEBUG USE 
   r_val = FLA_Copy_external_hip( handle, A, A_hip, U, U_hip );
+  /*fprintf(stdout, "enters lu copy\n");
+  fflush(stdout);
+  FLA_Obj B;
+  void* B_hip;
+  r_val = FLA_Copyt_external_hip( handle, A, A_hip, B, B_hip );
+  r_val = FLA_Copyt_external_hip( handle, B, B_hip, U, U_hip );*/
+
 
   return r_val;
 }

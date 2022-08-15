@@ -52,15 +52,16 @@ INC_PATH        := $(INCLUDE_DIR)/$(HOST)/
 # the libflame test suite. Modify these definitions if needed.
 LIBBLAS_PATH   := $(INSTALL_LIBDIR)
 #LIBBLAS        := $(LIBBLAS_PATH)/libblas.a
-LIBBLAS        := $(LIBBLAS_PATH)/libopenblas.a
+#LIBBLAS        := $(LIBBLAS_PATH)/libopenblas.a
+LIBBLAS        := -lopenblas
 #LIBBLAS        := $(HOME)/blis/lib/libblis.a
 
 # LAPACK implementation path. These values only matter if libflame was
 # configured with the external-lapack-interfaces option enabled. Modify
 # these definitions if needed.
 LIBLAPACK_PATH := $(INSTALL_LIBDIR)
-LIBLAPACK      := $(LIBLAPACK_PATH)/liblapack.a
-
+#LIBLAPACK      := $(LIBLAPACK_PATH)/liblapack.a
+LIBLAPACK      := -lopenblas
 
 
 #
@@ -75,6 +76,7 @@ TEST_OBJ_PATH  := obj
 FLA_LIB_PATH   := $(LIB_PATH)
 FLA_INC_PATH   := $(INC_PATH)
 LIBFLAME       := $(FLA_LIB_PATH)/libflame.a
+HELPER         := /home/joey/Desktop/libflame-hiphopper-main/build/library/src/libflame-hiphopper.so
 #LIBFLAME       := $(FLA_LIB_PATH)/libflame.so
 
 CFLAGS         += -I$(FLA_INC_PATH) -I$(TEST_SRC_PATH)
@@ -90,7 +92,7 @@ $(TEST_OBJ_PATH)/%.o: $(TEST_SRC_PATH)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test_$(FNAME): $(TEST_OBJS)
-	$(LINKER) $(TEST_OBJS) $(LIBFLAME) $(LIBLAPACK) $(LIBBLAS) $(LDFLAGS) -o $(TEST_BIN)
+	$(LINKER) $(TEST_OBJS) $(LIBFLAME) $(LIBLAPACK) $(LIBBLAS) $(HELPER) $(LDFLAGS) -o $(TEST_BIN)
 
 clean:
 	$(RM_F) $(TEST_OBJS) $(TEST_BIN)

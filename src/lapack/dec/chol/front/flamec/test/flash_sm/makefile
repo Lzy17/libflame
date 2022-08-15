@@ -15,6 +15,8 @@ FLAME_LIB    := $(LIB_PATH)/libflame.so
 #BLAS_LIB     := $(LIB_PATH)/libgoto.a
 #BLAS_LIB     := $(LIB_PATH)/liblapack.a $(LIB_PATH)/libgoto.a
 BLAS_LIB     := -lopenblas
+HELPER_LIB   := /home/joey/Desktop/libflame-hiphopper-main/build/library/src/libflame-hiphopper.so
+
 
 CC           := gcc
 FC           := gfortran
@@ -52,7 +54,7 @@ perf_$(FNAME): $(PERF_OBJS)
 
 
 test_$(FNAME): $(TEST_OBJS)
-	$(LINKER) $(TEST_OBJS) $(LDFLAGS) $(FLAME_LIB) $(LAPACK_LIB) $(BLAS_LIB) -o $(TEST_BIN)
+	$(LINKER) $(TEST_OBJS) $(LDFLAGS) $(FLAME_LIB) $(LAPACK_LIB) $(BLAS_LIB) $(HELPER_LIB) -o $(TEST_BIN)
 
 
 
