@@ -437,7 +437,7 @@ also to create a macro for when it is not below to return an error code.
                           (void *) cntl, \
                           "Copyt", \
                           FALSE, \
-                          FALSE, \
+                          TRUE, \
                           1, 0, 1, 1, \
                           trans, \
                           A, B )

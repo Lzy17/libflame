@@ -19,7 +19,7 @@
 
 
 static FLA_Bool flash_queue_enabled_hip  = TRUE;
-static FLA_Bool flash_malloc_managed_hip = TRUE;
+static FLA_Bool flash_malloc_managed_hip = FALSE;
 static dim_t    flash_queue_hip_n_blocks = 128;
 //static rocblas_handle handle;
 static rocblas_handle* handles;
@@ -353,20 +353,11 @@ FLA_Error FLASH_Queue_read_hip( int thread, FLA_Obj obj, void* buffer_hip )
 ----------------------------------------------------------------------------*/
 {
    hipSetDevice( thread );
+   hipStream_t stream;
+   rocblas_get_stream( handles[thread], &stream );
+
    if ( flash_malloc_managed_hip )
    {
-     // inject a stream sync on the rocBLAS stream to ensure completion
-     hipStream_t stream;
-     rocblas_get_stream( handles[thread], &stream );
-     hipError_t err = hipStreamSynchronize( stream );
-     //hipError_t err = hipStreamSynchronize( (hipStream_t) 0 );
-     if ( err != hipSuccess )
-     {
-       fprintf( stderr,
-                "Failure to synchronize on HIP stream. err=%d\n",
-                err );
-       return FLA_FAILURE;
-     }
      return FLA_SUCCESS;
    }
 
@@ -374,10 +365,11 @@ FLA_Error FLASH_Queue_read_hip( int thread, FLA_Obj obj, void* buffer_hip )
    const size_t count = FLA_Obj_elem_size( obj )
                           * FLA_Obj_col_stride( obj )
                           * FLA_Obj_width( obj );
-   const hipError_t err = hipMemcpy( FLA_Obj_buffer_at_view( obj ),
+   const hipError_t err = hipMemcpyAsync( FLA_Obj_buffer_at_view( obj ),
                                      buffer_hip,
                                      count,
-                                     hipMemcpyDeviceToHost );
+                                     hipMemcpyDeviceToHost,
+                                     stream );
 
    if ( err != hipSuccess )
    {

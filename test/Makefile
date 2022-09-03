@@ -22,7 +22,7 @@ LIB_DIR         := ../lib
 INCLUDE_DIR     := ../include
 HOST            := $(shell sh $(BUILD_DIR)/ac-utils/config.guess)
 CONFIG_MK_FILE  := $(CONFIG_DIR)/$(HOST)/config.mk
-LIB_PATH        := $(LIB_DIR)/$(HOST)/
+LIB_PATH        := $(LIB_DIR)/$(HOST)
 INC_PATH        := $(INCLUDE_DIR)/$(HOST)/
 
 # Include the definitions in the config makefile fragment.
