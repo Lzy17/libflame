@@ -25,6 +25,8 @@ FLA_Bool       FLASH_Queue_get_enabled_hip( void );
 
 // --- helper functions -------------------------------------------------------
 
+FLA_Error      FLASH_Queue_available_devices_hip( int* device_count );
+
 FLA_Error      FLASH_Queue_enable_malloc_managed_hip( void );
 FLA_Error      FLASH_Queue_disable_malloc_managed_hip( void );
 FLA_Bool       FLASH_Queue_get_malloc_managed_enabled_hip( void );
@@ -35,10 +37,18 @@ dim_t          FLASH_Queue_get_hip_num_blocks( void );
 FLA_Error      FLASH_Queue_bind_hip( int thread );
 FLA_Error      FLASH_Queue_alloc_hip( dim_t size, FLA_Datatype datatype, void** buffer_hip );
 FLA_Error      FLASH_Queue_free_hip( void* buffer_hip );
-//FLA_Error      FLASH_Queue_write_hip( FLA_Obj obj, void* buffer_hip );
-FLA_Error      FLASH_Queue_write_hip( int thread, FLA_Obj obj, void* buffer_hip );
-//FLA_Error      FLASH_Queue_read_hip( FLA_Obj obj, void* buffer_hip );
+FLA_Error      FLASH_Queue_write_hip( FLA_Obj obj, void* buffer_hip );
 FLA_Error      FLASH_Queue_read_hip( int thread, FLA_Obj obj, void* buffer_hip );
+FLA_Error      FLASH_Queue_read_async_hip( int thread, FLA_Obj obj, void* buffer_hip );
+FLA_Error      FLASH_Queue_sync_device_hip( int device );
+FLA_Error      FLASH_Queue_sync_hip( );
+<<<<<<< HEAD
+FLA_Error      FLASH_Queue_d2d_hip( int thread, void* buffer_hip_src, void* buffer_hip_dst, size_t count );
+
+
+
+=======
+>>>>>>> bef93ebff3f450a947ce8ca22490dc5eeb952036
 
 void           FLASH_Queue_exec_task_hip( FLASH_Task* t, void** input_arg, void** output_arg );
 

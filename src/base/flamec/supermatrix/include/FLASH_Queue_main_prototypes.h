@@ -106,6 +106,7 @@ void           FLASH_Queue_destroy_hip( int thread, void *arg );
 FLA_Bool       FLASH_Queue_exec_hip( FLASH_Task *t, void *arg );
 FLA_Bool       FLASH_Queue_check_hip( FLASH_Task *t, void *arg );
 FLA_Bool       FLASH_Queue_check_block_hip( FLA_Obj obj, int thread, void *arg );
+FLA_Bool       FLASH_Queue_check_block_d2d_hip( FLA_Obj obj, int thread, void *arg, bool isInput );
 void           FLASH_Queue_update_hip( FLASH_Task *t, void **input_arg, void **output_arg, void *arg );
 void           FLASH_Queue_update_block_hip( FLA_Obj obj, void **buffer_gpu, int thread, void *arg );
 void           FLASH_Queue_mark_hip( FLASH_Task *t, void *arg );

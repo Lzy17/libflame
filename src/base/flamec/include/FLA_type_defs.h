@@ -152,6 +152,11 @@ typedef struct FLA_Obj_struct
 
   // Task that last overwrote this block, flow dependency
   FLASH_Task*   write_task;
+  //which thread is this macro on
+  //int           thread;
+  //put it in the macro
+  int           thread;
+  int 		occupied;
 #endif
 } FLA_Base_obj;
 
@@ -164,6 +169,7 @@ typedef struct FLA_Obj_view
   dim_t         n;
   dim_t         m_inner;
   dim_t         n_inner;
+
 
   FLA_Base_obj* base;
 
