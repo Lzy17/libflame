@@ -18,7 +18,7 @@
 #include "rocblas/rocblas.h"
 
 
-static FLA_Bool flash_queue_enabled_hip  = FALSE;
+static FLA_Bool flash_queue_enabled_hip  = TRUE;
 static FLA_Bool flash_malloc_managed_hip = FALSE;
 static dim_t    flash_queue_hip_n_blocks = 128;
 static rocblas_handle* handles;
@@ -451,6 +451,40 @@ FLA_Error FLASH_Queue_sync_hip( )
    return FLA_SUCCESS;
 }
 
+<<<<<<< HEAD
+FLA_Error FLASH_Queue_d2d_hip(int thread, void* buffer_hip_src, void* buffer_hip_dst, size_t count )
+/*----------------------------------------------------------------------------
+
+   FLASH_Queue_d2d_hip
+
+----------------------------------------------------------------------------*/
+{
+   hipSetDevice( thread );
+   //printf("inside queue_d2d_hip src: %p  dst: %p\n", buffer_hip_src, buffer_hip_dst);
+   if ( flash_malloc_managed_hip )
+   {
+     return FLA_SUCCESS; // HMM will take care of getting the memory over
+   }
+   // Write the contents of a block in main memory to HIP.
+   const hipError_t err = hipMemcpy( buffer_hip_dst,
+                                          buffer_hip_src,
+                                          count,
+                                          hipMemcpyDeviceToDevice);//,
+					  //(hipStream_t) 0 );
+
+   if ( err != hipSuccess )
+   {
+     fprintf( stderr,
+              "Failure to conduct D2D. Size=%ld, err=%d\n",
+              count, err );
+     return FLA_FAILURE;
+   }
+
+   return FLA_SUCCESS;
+}
+
+=======
+>>>>>>> bef93ebff3f450a947ce8ca22490dc5eeb952036
 
 void FLASH_Queue_exec_task_hip( FLASH_Task* t, 
                                 void** input_arg, 

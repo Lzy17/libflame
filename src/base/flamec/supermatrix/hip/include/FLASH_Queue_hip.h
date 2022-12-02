@@ -42,6 +42,13 @@ FLA_Error      FLASH_Queue_read_hip( int thread, FLA_Obj obj, void* buffer_hip )
 FLA_Error      FLASH_Queue_read_async_hip( int thread, FLA_Obj obj, void* buffer_hip );
 FLA_Error      FLASH_Queue_sync_device_hip( int device );
 FLA_Error      FLASH_Queue_sync_hip( );
+<<<<<<< HEAD
+FLA_Error      FLASH_Queue_d2d_hip( int thread, void* buffer_hip_src, void* buffer_hip_dst, size_t count );
+
+
+
+=======
+>>>>>>> bef93ebff3f450a947ce8ca22490dc5eeb952036
 
 void           FLASH_Queue_exec_task_hip( FLASH_Task* t, void** input_arg, void** output_arg );
 
